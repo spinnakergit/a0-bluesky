@@ -1,0 +1,9 @@
+name: bluesky
+title: Bluesky Integration
+description: Post, read, search, and manage content on Bluesky via the AT Protocol with full API access.
+version: 1.0.0
+settings_sections:
+  - external
+per_project_config: true
+per_agent_config: true
+always_enabled: false

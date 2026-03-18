@@ -1,0 +1,96 @@
+<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 16px;">
+
+    <h4 style="margin: 0 0 16px 0; color: #0085ff;">Bluesky Settings</h4>
+
+    <div style="margin-bottom: 16px;">
+        <label style="display: block; font-weight: 600; margin-bottom: 4px; font-size: 13px;">Bluesky Handle</label>
+        <input data-bl="handle" type="text" placeholder="user.bsky.social"
+               style="width: 100%; padding: 6px 10px; border: 1px solid var(--border-color, #ccc); border-radius: 4px; font-size: 13px; box-sizing: border-box;">
+        <small style="color: var(--text-secondary, #888);">Your Bluesky handle (e.g., user.bsky.social or custom domain)</small>
+    </div>
+
+    <div style="margin-bottom: 16px;">
+        <label style="display: block; font-weight: 600; margin-bottom: 4px; font-size: 13px;">App Password</label>
+        <input data-bl="app_password" type="password" placeholder="xxxx-xxxx-xxxx-xxxx"
+               style="width: 100%; padding: 6px 10px; border: 1px solid var(--border-color, #ccc); border-radius: 4px; font-size: 13px; box-sizing: border-box;">
+        <small style="color: var(--text-secondary, #888);">Create at bsky.app > Settings > App Passwords. Do NOT use your account password.</small>
+    </div>
+
+    <div style="margin-bottom: 16px;">
+        <label style="display: block; font-weight: 600; margin-bottom: 4px; font-size: 13px;">PDS URL</label>
+        <input data-bl="pds_url" type="text" placeholder="https://bsky.social"
+               style="width: 100%; padding: 6px 10px; border: 1px solid var(--border-color, #ccc); border-radius: 4px; font-size: 13px; box-sizing: border-box;">
+        <small style="color: var(--text-secondary, #888);">Personal Data Server URL (default: https://bsky.social). Only change if using a custom PDS.</small>
+    </div>
+
+    <div style="margin-bottom: 16px; padding: 10px; background: var(--bg-secondary, #f5f5f5); border-radius: 4px; font-size: 12px;">
+        <strong>How to get an App Password:</strong>
+        <ol style="margin: 4px 0 0 0; padding-left: 20px;">
+            <li>Go to <a href="https://bsky.app/settings" target="_blank" style="color: #0085ff;">bsky.app/settings</a></li>
+            <li>Click "App Passwords" in the sidebar</li>
+            <li>Click "Add App Password"</li>
+            <li>Name it (e.g., "Agent Zero") and click "Create"</li>
+            <li>Copy the generated password and paste it above</li>
+        </ol>
+    </div>
+
+    <button data-bl="save-btn"
+            style="background: #0085ff; color: #fff; border: none; padding: 8px 20px; border-radius: 4px; cursor: pointer; font-size: 13px;">
+        Save Bluesky Settings
+    </button>
+    <span data-bl="save-status" style="margin-left: 10px; font-size: 12px;"></span>
+</div>
+
+<script>
+(function() {
+    const fetchApi = globalThis.fetchApi || fetch;
+    const API_CONFIG = '/api/plugins/bluesky/bluesky_config_api';
+
+    function $(sel) { return document.querySelector('[data-bl="' + sel + '"]'); }
+
+    async function loadConfig() {
+        try {
+            const resp = await fetchApi(API_CONFIG);
+            const config = await resp.json();
+            if (config.handle) $('handle').value = config.handle;
+            if (config.app_password) $('app_password').value = config.app_password;
+            $('pds_url').value = config.pds_url || 'https://bsky.social';
+        } catch (e) {
+            console.error('Failed to load config:', e);
+        }
+    }
+
+    async function saveConfig() {
+        const status = $('save-status');
+        status.textContent = 'Saving...';
+        status.style.color = '#e65100';
+        try {
+            const config = {
+                handle: $('handle').value,
+                app_password: $('app_password').value,
+                pds_url: $('pds_url').value || 'https://bsky.social',
+            };
+            const resp = await fetchApi(API_CONFIG, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({action: 'set', config: config})
+            });
+            const data = await resp.json();
+            if (data.ok) {
+                status.textContent = 'Saved!';
+                status.style.color = '#2e7d32';
+            } else {
+                status.textContent = data.error || 'Save failed';
+                status.style.color = '#c62828';
+            }
+        } catch (e) {
+            status.textContent = 'Save failed';
+            status.style.color = '#c62828';
+        }
+        setTimeout(() => { status.textContent = ''; }, 3000);
+    }
+
+    $('save-btn').addEventListener('click', saveConfig);
+    loadConfig();
+})();
+</script>

@@ -1,0 +1,67 @@
+<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 16px;">
+    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border-color, #e0e0e0);">
+        <h3 style="margin: 0; color: #0085ff;">Bluesky Integration</h3>
+        <span data-bl="status-badge" style="padding: 3px 10px; border-radius: 10px; font-size: 11px; font-weight: 600; background: #fce4ec; color: #c62828;">Checking...</span>
+    </div>
+
+    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;">
+        <button data-bl="test-btn" style="background: #0085ff; color: #fff; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-size: 12px;">Test Connection</button>
+    </div>
+
+    <div data-bl="usage-info" style="font-size: 12px; color: var(--text-secondary, #888); margin-bottom: 12px;"></div>
+
+    <div style="margin-top: 12px; font-size: 11px; color: var(--text-secondary, #999);">
+        <strong>Tools:</strong> bluesky_post, bluesky_thread, bluesky_read, bluesky_search, bluesky_manage, bluesky_profile, bluesky_follow, bluesky_media, bluesky_notifications
+    </div>
+    <div style="margin-top: 4px; font-size: 11px; color: var(--text-secondary, #999);">
+        <strong>API:</strong> Free, open protocol — no tiers, no rate limits (beyond standard PDS limits)
+    </div>
+</div>
+
+<script>
+(function() {
+    const fetchApi = globalThis.fetchApi || fetch;
+    const API_TEST = '/api/plugins/bluesky/bluesky_test';
+
+    function $(sel) { return document.querySelector('[data-bl="' + sel + '"]'); }
+
+    async function testConnection() {
+        const badge = $('status-badge');
+        badge.textContent = 'Testing...';
+        badge.style.background = '#fff3e0';
+        badge.style.color = '#e65100';
+        try {
+            const resp = await fetchApi(API_TEST, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: '{}'
+            });
+            const data = await resp.json();
+            if (data.ok) {
+                badge.textContent = 'Connected as ' + (data.user || 'unknown');
+                badge.style.background = '#e8f5e9';
+                badge.style.color = '#2e7d32';
+                if (data.usage) {
+                    const u = data.usage;
+                    $('usage-info').innerHTML =
+                        '<strong>This month:</strong> ' +
+                        u.posts_created + ' posts, ' +
+                        u.likes + ' likes';
+                }
+            } else {
+                badge.textContent = data.error || 'Error';
+                badge.style.background = '#fce4ec';
+                badge.style.color = '#c62828';
+                $('usage-info').textContent = '';
+            }
+        } catch (e) {
+            badge.textContent = 'API unavailable';
+            badge.style.background = '#fce4ec';
+            badge.style.color = '#c62828';
+        }
+    }
+
+    $('test-btn').addEventListener('click', testConnection);
+    testConnection();
+})();
+</script>

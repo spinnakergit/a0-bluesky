@@ -1,0 +1,25 @@
+# Bluesky Integration — Default Configuration
+# These values are used when no config.json exists yet.
+
+# Connection — App Password authentication
+# Get an App Password at: bsky.app > Settings > App Passwords
+handle: ""          # Your Bluesky handle (e.g., user.bsky.social)
+app_password: ""    # App Password (NOT your account password)
+pds_url: "https://bsky.social"  # PDS URL (default: bsky.social)
+
+# Defaults
+defaults:
+  post_limit: 30
+  search_limit: 25
+  default_language: "en"
+
+# Memory integration
+memory:
+  auto_save: true
+  export_format: "markdown"
+
+# Security
+security:
+  max_post_length: 300
+  sanitize_content: true
+  strip_injection_patterns: true
