@@ -1,96 +1,143 @@
-<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 16px;">
+<html>
+<head><title>Bluesky</title></head>
+<body>
+    <div x-data="{ activeTab: 'credentials' }" x-init="
+        if (!config.handle) config.handle = '';
+        if (!config.app_password) config.app_password = '';
+        if (!config.pds_url) config.pds_url = 'https://bsky.social';
+        if (!config.defaults) config.defaults = {};
+        if (!config.defaults.post_limit) config.defaults.post_limit = 30;
+        if (!config.defaults.search_limit) config.defaults.search_limit = 25;
+        if (!config.defaults.default_language) config.defaults.default_language = 'en';
+        if (!config.memory) config.memory = {};
+        if (config.memory.auto_save === undefined) config.memory.auto_save = true;
+        if (!config.memory.export_format) config.memory.export_format = 'markdown';
+        if (!config.security) config.security = {};
+        if (!config.security.max_post_length) config.security.max_post_length = 300;
+        if (config.security.sanitize_content === undefined) config.security.sanitize_content = true;
+    ">
+        <template x-if="config">
+            <div>
+                <!-- Tab Navigation -->
+                <div style="display: flex; gap: 0; border-bottom: 2px solid var(--border-color, #e0e0e0); margin-bottom: 16px;">
+                    <template x-for="tab in ['credentials', 'defaults', 'security']">
+                        <button @click="activeTab = tab"
+                            :style="'padding: 8px 16px; border: none; background: none; cursor: pointer; font-size: 12px; font-weight: 600; margin-bottom: -2px; color: ' + (activeTab === tab ? '#0085ff' : 'var(--text-secondary, #888)') + '; border-bottom: 2px solid ' + (activeTab === tab ? '#0085ff' : 'transparent')"
+                            x-text="tab.charAt(0).toUpperCase() + tab.slice(1)"></button>
+                    </template>
+                </div>
 
-    <h4 style="margin: 0 0 16px 0; color: #0085ff;">Bluesky Settings</h4>
+                <!-- Credentials Tab -->
+                <div x-show="activeTab === 'credentials'">
+                    <div class="section-description">Need help? See the <a href="https://github.com/spinnakergit/a0-bluesky/blob/main/docs/SETUP.md" target="_blank" style="color: var(--link-color, #0085ff);">Setup Guide</a> for step-by-step instructions.</div>
 
-    <div style="margin-bottom: 16px;">
-        <label style="display: block; font-weight: 600; margin-bottom: 4px; font-size: 13px;">Bluesky Handle</label>
-        <input data-bl="handle" type="text" placeholder="user.bsky.social"
-               style="width: 100%; padding: 6px 10px; border: 1px solid var(--border-color, #ccc); border-radius: 4px; font-size: 13px; box-sizing: border-box;">
-        <small style="color: var(--text-secondary, #888);">Your Bluesky handle (e.g., user.bsky.social or custom domain)</small>
+                    <div class="section-title">Account</div>
+
+                    <div class="field">
+                        <div class="field-label">
+                            <div class="field-title">Bluesky Handle</div>
+                            <div class="field-description">Your Bluesky handle (e.g., user.bsky.social or custom domain).</div>
+                        </div>
+                        <div class="field-control">
+                            <input type="text" x-model="config.handle" placeholder="user.bsky.social">
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <div class="field-label">
+                            <div class="field-title">App Password</div>
+                            <div class="field-description">Create at bsky.app > Settings > App Passwords. Do NOT use your account password.</div>
+                        </div>
+                        <div class="field-control">
+                            <input type="password" x-model="config.app_password" placeholder="xxxx-xxxx-xxxx-xxxx">
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <div class="field-label">
+                            <div class="field-title">PDS URL</div>
+                            <div class="field-description">Personal Data Server URL. Only change if using a custom PDS.</div>
+                        </div>
+                        <div class="field-control">
+                            <input type="text" x-model="config.pds_url" placeholder="https://bsky.social">
+                        </div>
+                    </div>
+
+                    <div style="padding: 10px; background: var(--bg-secondary, #f5f5f5); border-radius: 6px; font-size: 12px;">
+                        <strong>How to get an App Password:</strong>
+                        <ol style="margin: 4px 0 0 0; padding-left: 20px;">
+                            <li>Go to <a href="https://bsky.app/settings" target="_blank" style="color: #0085ff;">bsky.app/settings</a></li>
+                            <li>Click "Privacy and security" &rarr; "App Passwords"</li>
+                            <li>Click "Add App Password"</li>
+                            <li>Name it (e.g., "Agent Zero") and click "Create"</li>
+                            <li>Copy the generated password and paste it above</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- Defaults Tab -->
+                <div x-show="activeTab === 'defaults'">
+                    <div class="section-title">Post & Search Defaults</div>
+
+                    <div class="field">
+                        <div class="field-label">
+                            <div class="field-title">Post Limit</div>
+                            <div class="field-description">Maximum posts per feed read (1-100).</div>
+                        </div>
+                        <div class="field-control">
+                            <input type="number" min="1" max="100" x-model.number="config.defaults.post_limit">
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <div class="field-label">
+                            <div class="field-title">Search Limit</div>
+                            <div class="field-description">Maximum results per search query (1-100).</div>
+                        </div>
+                        <div class="field-control">
+                            <input type="number" min="1" max="100" x-model.number="config.defaults.search_limit">
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <div class="field-label">
+                            <div class="field-title">Default Language</div>
+                            <div class="field-description">Language code for posts (e.g., en, es, fr, de, ja).</div>
+                        </div>
+                        <div class="field-control">
+                            <input type="text" x-model="config.defaults.default_language" placeholder="en">
+                        </div>
+                    </div>
+
+                    <div class="section-title">Memory</div>
+
+                    <div class="field">
+                        <div class="field-label">
+                            <div class="field-title">Auto-save to memory</div>
+                            <div class="field-description">Automatically save research summaries to agent memory.</div>
+                        </div>
+                        <div class="field-control">
+                            <label class="toggle"><input type="checkbox" x-model="config.memory.auto_save"><span class="toggler"></span></label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Tab -->
+                <div x-show="activeTab === 'security'">
+                    <div class="section-title">Security Settings</div>
+
+                    <div class="field">
+                        <div class="field-label">
+                            <div class="field-title">Max Post Length</div>
+                            <div class="field-description">Maximum characters per post (1-300).</div>
+                        </div>
+                        <div class="field-control">
+                            <input type="number" min="1" max="300" x-model.number="config.security.max_post_length">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
     </div>
-
-    <div style="margin-bottom: 16px;">
-        <label style="display: block; font-weight: 600; margin-bottom: 4px; font-size: 13px;">App Password</label>
-        <input data-bl="app_password" type="password" placeholder="xxxx-xxxx-xxxx-xxxx"
-               style="width: 100%; padding: 6px 10px; border: 1px solid var(--border-color, #ccc); border-radius: 4px; font-size: 13px; box-sizing: border-box;">
-        <small style="color: var(--text-secondary, #888);">Create at bsky.app > Settings > App Passwords. Do NOT use your account password.</small>
-    </div>
-
-    <div style="margin-bottom: 16px;">
-        <label style="display: block; font-weight: 600; margin-bottom: 4px; font-size: 13px;">PDS URL</label>
-        <input data-bl="pds_url" type="text" placeholder="https://bsky.social"
-               style="width: 100%; padding: 6px 10px; border: 1px solid var(--border-color, #ccc); border-radius: 4px; font-size: 13px; box-sizing: border-box;">
-        <small style="color: var(--text-secondary, #888);">Personal Data Server URL (default: https://bsky.social). Only change if using a custom PDS.</small>
-    </div>
-
-    <div style="margin-bottom: 16px; padding: 10px; background: var(--bg-secondary, #f5f5f5); border-radius: 4px; font-size: 12px;">
-        <strong>How to get an App Password:</strong>
-        <ol style="margin: 4px 0 0 0; padding-left: 20px;">
-            <li>Go to <a href="https://bsky.app/settings" target="_blank" style="color: #0085ff;">bsky.app/settings</a></li>
-            <li>Click "App Passwords" in the sidebar</li>
-            <li>Click "Add App Password"</li>
-            <li>Name it (e.g., "Agent Zero") and click "Create"</li>
-            <li>Copy the generated password and paste it above</li>
-        </ol>
-    </div>
-
-    <button data-bl="save-btn"
-            style="background: #0085ff; color: #fff; border: none; padding: 8px 20px; border-radius: 4px; cursor: pointer; font-size: 13px;">
-        Save Bluesky Settings
-    </button>
-    <span data-bl="save-status" style="margin-left: 10px; font-size: 12px;"></span>
-</div>
-
-<script>
-(function() {
-    const fetchApi = globalThis.fetchApi || fetch;
-    const API_CONFIG = '/api/plugins/bluesky/bluesky_config_api';
-
-    function $(sel) { return document.querySelector('[data-bl="' + sel + '"]'); }
-
-    async function loadConfig() {
-        try {
-            const resp = await fetchApi(API_CONFIG);
-            const config = await resp.json();
-            if (config.handle) $('handle').value = config.handle;
-            if (config.app_password) $('app_password').value = config.app_password;
-            $('pds_url').value = config.pds_url || 'https://bsky.social';
-        } catch (e) {
-            console.error('Failed to load config:', e);
-        }
-    }
-
-    async function saveConfig() {
-        const status = $('save-status');
-        status.textContent = 'Saving...';
-        status.style.color = '#e65100';
-        try {
-            const config = {
-                handle: $('handle').value,
-                app_password: $('app_password').value,
-                pds_url: $('pds_url').value || 'https://bsky.social',
-            };
-            const resp = await fetchApi(API_CONFIG, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({action: 'set', config: config})
-            });
-            const data = await resp.json();
-            if (data.ok) {
-                status.textContent = 'Saved!';
-                status.style.color = '#2e7d32';
-            } else {
-                status.textContent = data.error || 'Save failed';
-                status.style.color = '#c62828';
-            }
-        } catch (e) {
-            status.textContent = 'Save failed';
-            status.style.color = '#c62828';
-        }
-        setTimeout(() => { status.textContent = ''; }, 3000);
-    }
-
-    $('save-btn').addEventListener('click', saveConfig);
-    loadConfig();
-})();
-</script>
+</body>
+</html>

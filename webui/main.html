@@ -5,7 +5,7 @@
     </div>
 
     <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;">
-        <button data-bl="test-btn" style="background: #0085ff; color: #fff; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-size: 12px;">Test Connection</button>
+        <button data-bl="test-btn" onclick="window._blMain.testConnection()" style="background: #0085ff; color: #fff; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-size: 12px;">Test Connection</button>
     </div>
 
     <div data-bl="usage-info" style="font-size: 12px; color: var(--text-secondary, #888); margin-bottom: 12px;"></div>
@@ -20,7 +20,7 @@
 
 <script>
 (function() {
-    const fetchApi = globalThis.fetchApi || fetch;
+    function fetchApi(url, opts) { return (globalThis.fetchApi || fetch)(url, opts); }
     const API_TEST = '/api/plugins/bluesky/bluesky_test';
 
     function $(sel) { return document.querySelector('[data-bl="' + sel + '"]'); }
@@ -61,7 +61,7 @@
         }
     }
 
-    $('test-btn').addEventListener('click', testConnection);
-    testConnection();
+    window._blMain = { testConnection: testConnection };
+    setTimeout(testConnection, 50);
 })();
 </script>
