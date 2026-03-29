@@ -13,7 +13,7 @@ class BlueskyPost(Tool):
         if not text:
             return Response(message="Error: 'text' is required.", break_loop=False)
 
-        from plugins.bluesky.helpers.sanitize import sanitize_post_text, validate_post_length
+        from usr.plugins.bluesky.helpers.sanitize import sanitize_post_text, validate_post_length
         text = sanitize_post_text(text)
         ok, count = validate_post_length(text)
         if not ok:
@@ -22,16 +22,16 @@ class BlueskyPost(Tool):
                 break_loop=False,
             )
 
-        from plugins.bluesky.helpers.bluesky_auth import get_bluesky_config
+        from usr.plugins.bluesky.helpers.bluesky_auth import get_bluesky_config
         config = get_bluesky_config(self.agent)
-        from plugins.bluesky.helpers.bluesky_client import BlueskyClient
+        from usr.plugins.bluesky.helpers.bluesky_client import BlueskyClient
         client = BlueskyClient(config)
 
         try:
             self.set_progress("Posting to Bluesky...")
 
             # Detect rich text facets (links, mentions, hashtags)
-            from plugins.bluesky.helpers.sanitize import detect_facets
+            from usr.plugins.bluesky.helpers.sanitize import detect_facets
             facets = detect_facets(text)
 
             reply_to = None

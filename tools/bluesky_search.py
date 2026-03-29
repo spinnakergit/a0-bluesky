@@ -17,9 +17,9 @@ class BlueskySearch(Tool):
         if sort not in ("latest", "top"):
             return Response(message="Error: 'sort' must be 'latest' or 'top'.", break_loop=False)
 
-        from plugins.bluesky.helpers.bluesky_auth import get_bluesky_config
+        from usr.plugins.bluesky.helpers.bluesky_auth import get_bluesky_config
         config = get_bluesky_config(self.agent)
-        from plugins.bluesky.helpers.bluesky_client import BlueskyClient
+        from usr.plugins.bluesky.helpers.bluesky_client import BlueskyClient
         client = BlueskyClient(config)
 
         try:
@@ -34,7 +34,7 @@ class BlueskySearch(Tool):
                 posts = result.get("posts", [])
                 if not posts:
                     return Response(message=f"No posts found for: {query}", break_loop=False)
-                from plugins.bluesky.helpers.sanitize import format_posts
+                from usr.plugins.bluesky.helpers.sanitize import format_posts
                 return Response(
                     message=f"Found {len(posts)} post(s) for \"{query}\":\n\n{format_posts(posts)}",
                     break_loop=False,

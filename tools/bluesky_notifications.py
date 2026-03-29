@@ -7,9 +7,9 @@ class BlueskyNotifications(Tool):
     async def execute(self, **kwargs) -> Response:
         max_results = int(self.args.get("max_results", "30"))
 
-        from plugins.bluesky.helpers.bluesky_auth import get_bluesky_config
+        from usr.plugins.bluesky.helpers.bluesky_auth import get_bluesky_config
         config = get_bluesky_config(self.agent)
-        from plugins.bluesky.helpers.bluesky_client import BlueskyClient
+        from usr.plugins.bluesky.helpers.bluesky_client import BlueskyClient
         client = BlueskyClient(config)
 
         try:
@@ -26,7 +26,7 @@ class BlueskyNotifications(Tool):
             if not notifications:
                 return Response(message="No notifications.", break_loop=False)
 
-            from plugins.bluesky.helpers.sanitize import format_notification
+            from usr.plugins.bluesky.helpers.sanitize import format_notification
             lines = [f"Notifications ({len(notifications)}):\n"]
             for notif in notifications:
                 lines.append(format_notification(notif))

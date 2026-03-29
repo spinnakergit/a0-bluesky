@@ -10,16 +10,16 @@ class BlueskyRead(Tool):
         handle = self.args.get("handle", "")
         max_results = int(self.args.get("max_results", "20"))
 
-        from plugins.bluesky.helpers.bluesky_auth import get_bluesky_config
+        from usr.plugins.bluesky.helpers.bluesky_auth import get_bluesky_config
         config = get_bluesky_config(self.agent)
-        from plugins.bluesky.helpers.bluesky_client import BlueskyClient
+        from usr.plugins.bluesky.helpers.bluesky_client import BlueskyClient
         client = BlueskyClient(config)
 
         try:
             if action == "post":
                 if not uri:
                     return Response(message="Error: 'uri' is required to read a post.", break_loop=False)
-                from plugins.bluesky.helpers.sanitize import validate_at_uri
+                from usr.plugins.bluesky.helpers.sanitize import validate_at_uri
                 try:
                     uri = validate_at_uri(uri)
                 except ValueError as e:
@@ -34,13 +34,13 @@ class BlueskyRead(Tool):
                 post = result.get("thread", {}).get("post", {})
                 if not post:
                     return Response(message="Post not found.", break_loop=False)
-                from plugins.bluesky.helpers.sanitize import format_post
+                from usr.plugins.bluesky.helpers.sanitize import format_post
                 return Response(message=format_post(post), break_loop=False)
 
             elif action == "thread":
                 if not uri:
                     return Response(message="Error: 'uri' is required to read a thread.", break_loop=False)
-                from plugins.bluesky.helpers.sanitize import validate_at_uri
+                from usr.plugins.bluesky.helpers.sanitize import validate_at_uri
                 uri = validate_at_uri(uri)
                 self.set_progress("Fetching thread...")
                 result = await client.get_post_thread(uri, depth=10)
@@ -53,7 +53,7 @@ class BlueskyRead(Tool):
                 posts = self._flatten_thread(thread)
                 if not posts:
                     return Response(message="No posts found in thread.", break_loop=False)
-                from plugins.bluesky.helpers.sanitize import format_posts
+                from usr.plugins.bluesky.helpers.sanitize import format_posts
                 return Response(
                     message=f"Thread ({len(posts)} posts):\n\n{format_posts(posts)}",
                     break_loop=False,
@@ -62,7 +62,7 @@ class BlueskyRead(Tool):
             elif action == "user_posts":
                 if not handle:
                     return Response(message="Error: 'handle' is required for user_posts.", break_loop=False)
-                from plugins.bluesky.helpers.sanitize import validate_handle
+                from usr.plugins.bluesky.helpers.sanitize import validate_handle
                 try:
                     handle = validate_handle(handle)
                 except ValueError as e:
@@ -78,7 +78,7 @@ class BlueskyRead(Tool):
                 if not feed:
                     return Response(message=f"No posts found from @{handle}.", break_loop=False)
                 posts = [item.get("post", {}) for item in feed]
-                from plugins.bluesky.helpers.sanitize import format_posts
+                from usr.plugins.bluesky.helpers.sanitize import format_posts
                 return Response(
                     message=f"Posts from @{handle} ({len(posts)}):\n\n{format_posts(posts)}",
                     break_loop=False,
@@ -96,7 +96,7 @@ class BlueskyRead(Tool):
                 if not feed:
                     return Response(message="Timeline is empty.", break_loop=False)
                 posts = [item.get("post", {}) for item in feed]
-                from plugins.bluesky.helpers.sanitize import format_posts
+                from usr.plugins.bluesky.helpers.sanitize import format_posts
                 return Response(
                     message=f"Timeline ({len(posts)} posts):\n\n{format_posts(posts)}",
                     break_loop=False,

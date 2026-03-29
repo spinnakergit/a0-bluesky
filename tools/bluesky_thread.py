@@ -21,7 +21,7 @@ class BlueskyThread(Tool):
         if len(parts) > 25:
             return Response(message="Error: Thread too long (max 25 posts).", break_loop=False)
 
-        from plugins.bluesky.helpers.sanitize import sanitize_post_text, validate_post_length
+        from usr.plugins.bluesky.helpers.sanitize import sanitize_post_text, validate_post_length
         for i, part in enumerate(parts):
             parts[i] = sanitize_post_text(part)
             ok, count = validate_post_length(parts[i])
@@ -31,9 +31,9 @@ class BlueskyThread(Tool):
                     break_loop=False,
                 )
 
-        from plugins.bluesky.helpers.bluesky_auth import get_bluesky_config
+        from usr.plugins.bluesky.helpers.bluesky_auth import get_bluesky_config
         config = get_bluesky_config(self.agent)
-        from plugins.bluesky.helpers.bluesky_client import BlueskyClient
+        from usr.plugins.bluesky.helpers.bluesky_client import BlueskyClient
         client = BlueskyClient(config)
 
         try:
@@ -43,7 +43,7 @@ class BlueskyThread(Tool):
             parent_uri = None
             parent_cid = None
 
-            from plugins.bluesky.helpers.sanitize import detect_facets
+            from usr.plugins.bluesky.helpers.sanitize import detect_facets
 
             for i, part in enumerate(parts):
                 self.set_progress(f"Posting {i+1}/{len(parts)}...")

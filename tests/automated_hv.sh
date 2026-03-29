@@ -264,8 +264,8 @@ if [ "$HAS_CREDS" = "yes" ]; then
     track "HV-19"
     RESULT=$(pyexec "
 import asyncio, json
-from plugins.bluesky.helpers.bluesky_auth import get_bluesky_config
-from plugins.bluesky.helpers.bluesky_client import BlueskyClient
+from usr.plugins.bluesky.helpers.bluesky_auth import get_bluesky_config
+from usr.plugins.bluesky.helpers.bluesky_client import BlueskyClient
 config = get_bluesky_config()
 client = BlueskyClient(config)
 async def test():
@@ -291,8 +291,8 @@ asyncio.run(test())
     track "HV-22"
     RESULT=$(pyexec "
 import asyncio, json
-from plugins.bluesky.helpers.bluesky_auth import get_bluesky_config
-from plugins.bluesky.helpers.bluesky_client import BlueskyClient
+from usr.plugins.bluesky.helpers.bluesky_auth import get_bluesky_config
+from usr.plugins.bluesky.helpers.bluesky_client import BlueskyClient
 config = get_bluesky_config()
 client = BlueskyClient(config)
 async def test():
@@ -318,8 +318,8 @@ asyncio.run(test())
     track "HV-27"
     RESULT=$(pyexec "
 import asyncio, json
-from plugins.bluesky.helpers.bluesky_auth import get_bluesky_config
-from plugins.bluesky.helpers.bluesky_client import BlueskyClient
+from usr.plugins.bluesky.helpers.bluesky_auth import get_bluesky_config
+from usr.plugins.bluesky.helpers.bluesky_client import BlueskyClient
 config = get_bluesky_config()
 client = BlueskyClient(config)
 async def test():
@@ -345,8 +345,8 @@ asyncio.run(test())
     track "HV-33"
     RESULT=$(pyexec "
 import asyncio, json
-from plugins.bluesky.helpers.bluesky_auth import get_bluesky_config
-from plugins.bluesky.helpers.bluesky_client import BlueskyClient
+from usr.plugins.bluesky.helpers.bluesky_auth import get_bluesky_config
+from usr.plugins.bluesky.helpers.bluesky_client import BlueskyClient
 config = get_bluesky_config()
 client = BlueskyClient(config)
 async def test():
@@ -412,7 +412,7 @@ fi
 track "HV-14"
 api "bluesky_config_api" '{"action":"set","handle":"","app_password":"","pds_url":""}' > /dev/null 2>&1
 NO_CRED_RESULT=$(pyexec "
-from plugins.bluesky.helpers.bluesky_auth import has_credentials
+from usr.plugins.bluesky.helpers.bluesky_auth import has_credentials
 config = {'handle': '', 'app_password': ''}
 if not has_credentials(config):
     print('PASS')
@@ -428,7 +428,7 @@ fi
 # HV-34: Post too long validation
 track "HV-34"
 RESULT=$(pyexec "
-from plugins.bluesky.helpers.sanitize import validate_post_length
+from usr.plugins.bluesky.helpers.sanitize import validate_post_length
 ok, count = validate_post_length('x' * 301)
 if not ok and count == 301:
     print('PASS')
@@ -444,7 +444,7 @@ fi
 # HV-35: Invalid handle validation
 track "HV-35"
 RESULT=$(pyexec "
-from plugins.bluesky.helpers.sanitize import validate_handle
+from usr.plugins.bluesky.helpers.sanitize import validate_handle
 try:
     validate_handle('invalid')
     print('FAIL:no_error')
@@ -462,7 +462,7 @@ fi
 # HV-34 (additional): Invalid AT URI
 track "HV-34"
 RESULT=$(pyexec "
-from plugins.bluesky.helpers.sanitize import validate_at_uri
+from usr.plugins.bluesky.helpers.sanitize import validate_at_uri
 try:
     validate_at_uri('https://not-an-at-uri.com')
     print('FAIL:no_error')
@@ -484,7 +484,7 @@ section "Phase E: Sanitize & Format (HV-16 partial)"
 # HV-16 (partial): Facet detection for hashtags and links
 track "HV-16"
 RESULT=$(pyexec "
-from plugins.bluesky.helpers.sanitize import detect_facets
+from usr.plugins.bluesky.helpers.sanitize import detect_facets
 facets = detect_facets('Testing #AI integration https://github.com')
 links = [f for f in facets if 'link' in f['features'][0].get('\$type', '')]
 tags = [f for f in facets if 'tag' in f['features'][0].get('\$type', '')]
@@ -501,7 +501,7 @@ fi
 
 # Profile formatting
 RESULT=$(pyexec "
-from plugins.bluesky.helpers.sanitize import format_profile
+from usr.plugins.bluesky.helpers.sanitize import format_profile
 p = format_profile({
     'handle': 'test.bsky.social',
     'displayName': 'Test User',
@@ -522,7 +522,7 @@ fi
 
 # Post formatting
 RESULT=$(pyexec "
-from plugins.bluesky.helpers.sanitize import format_post
+from usr.plugins.bluesky.helpers.sanitize import format_post
 p = format_post({
     'author': {'handle': 'test.bsky.social', 'displayName': 'Test'},
     'record': {'text': 'Hello World', 'createdAt': '2026-01-01T00:00:00Z'},

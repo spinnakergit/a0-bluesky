@@ -9,16 +9,16 @@ class BlueskyFollow(Tool):
         handle = self.args.get("handle", "")
         max_results = int(self.args.get("max_results", "50"))
 
-        from plugins.bluesky.helpers.bluesky_auth import get_bluesky_config
+        from usr.plugins.bluesky.helpers.bluesky_auth import get_bluesky_config
         config = get_bluesky_config(self.agent)
-        from plugins.bluesky.helpers.bluesky_client import BlueskyClient
+        from usr.plugins.bluesky.helpers.bluesky_client import BlueskyClient
         client = BlueskyClient(config)
 
         try:
             if action == "follow":
                 if not handle:
                     return Response(message="Error: 'handle' is required for follow.", break_loop=False)
-                from plugins.bluesky.helpers.sanitize import validate_handle
+                from usr.plugins.bluesky.helpers.sanitize import validate_handle
                 handle = validate_handle(handle)
                 self.set_progress(f"Following @{handle}...")
                 # Resolve handle to DID first

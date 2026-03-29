@@ -52,12 +52,12 @@ class BlueskyClient:
     @classmethod
     def from_config(cls, agent=None):
         """Factory: create client from A0 plugin config."""
-        from plugins.bluesky.helpers.bluesky_auth import get_bluesky_config
+        from usr.plugins.bluesky.helpers.bluesky_auth import get_bluesky_config
         config = get_bluesky_config(agent)
         return cls(config)
 
     def _get_pds(self) -> str:
-        from plugins.bluesky.helpers.bluesky_auth import get_pds_url
+        from usr.plugins.bluesky.helpers.bluesky_auth import get_pds_url
         return get_pds_url(self.config)
 
     async def _get_session(self) -> aiohttp.ClientSession:
@@ -71,14 +71,14 @@ class BlueskyClient:
 
     def _get_headers(self) -> dict:
         """Get auth headers for XRPC requests."""
-        from plugins.bluesky.helpers.bluesky_auth import get_auth_headers
+        from usr.plugins.bluesky.helpers.bluesky_auth import get_auth_headers
         headers = get_auth_headers(self.config)
         headers["Content-Type"] = "application/json"
         return headers
 
     def _get_did(self) -> str:
         """Get the DID from session."""
-        from plugins.bluesky.helpers.bluesky_auth import get_did
+        from usr.plugins.bluesky.helpers.bluesky_auth import get_did
         return get_did(self.config)
 
     async def _request(
@@ -203,7 +203,7 @@ class BlueskyClient:
         )
 
         if not result.get("error"):
-            from plugins.bluesky.helpers.bluesky_auth import increment_usage
+            from usr.plugins.bluesky.helpers.bluesky_auth import increment_usage
             increment_usage(self.config)
 
         return result
@@ -222,7 +222,7 @@ class BlueskyClient:
             },
         )
         if not result.get("error"):
-            from plugins.bluesky.helpers.bluesky_auth import increment_usage
+            from usr.plugins.bluesky.helpers.bluesky_auth import increment_usage
             increment_usage(self.config, "posts_deleted")
         return result
 
@@ -304,7 +304,7 @@ class BlueskyClient:
             },
         )
         if not result.get("error"):
-            from plugins.bluesky.helpers.bluesky_auth import increment_usage
+            from usr.plugins.bluesky.helpers.bluesky_auth import increment_usage
             increment_usage(self.config, "likes")
         return result
 

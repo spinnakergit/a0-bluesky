@@ -8,9 +8,9 @@ class BlueskyProfile(Tool):
         action = self.args.get("action", "me")
         handle = self.args.get("handle", "")
 
-        from plugins.bluesky.helpers.bluesky_auth import get_bluesky_config
+        from usr.plugins.bluesky.helpers.bluesky_auth import get_bluesky_config
         config = get_bluesky_config(self.agent)
-        from plugins.bluesky.helpers.bluesky_client import BlueskyClient
+        from usr.plugins.bluesky.helpers.bluesky_client import BlueskyClient
         client = BlueskyClient(config)
 
         try:
@@ -20,7 +20,7 @@ class BlueskyProfile(Tool):
             elif action == "lookup":
                 if not handle:
                     return Response(message="Error: 'handle' is required for lookup.", break_loop=False)
-                from plugins.bluesky.helpers.sanitize import validate_handle
+                from usr.plugins.bluesky.helpers.sanitize import validate_handle
                 try:
                     handle = validate_handle(handle)
                 except ValueError as e:
@@ -39,7 +39,7 @@ class BlueskyProfile(Tool):
                     break_loop=False,
                 )
 
-            from plugins.bluesky.helpers.sanitize import format_profile
+            from usr.plugins.bluesky.helpers.sanitize import format_profile
             return Response(message=format_profile(result), break_loop=False)
         finally:
             await client.close()

@@ -185,7 +185,7 @@ section "3. Python Imports"
 ########################################
 
 # T3.1 bluesky_auth
-RESULT=$(pyexec "from plugins.bluesky.helpers.bluesky_auth import get_bluesky_config, is_authenticated, has_credentials; print('ok')")
+RESULT=$(pyexec "from usr.plugins.bluesky.helpers.bluesky_auth import get_bluesky_config, is_authenticated, has_credentials; print('ok')")
 if [ "$RESULT" = "ok" ]; then
     pass "T3.1 bluesky_auth imports"
 else
@@ -193,7 +193,7 @@ else
 fi
 
 # T3.2 bluesky_client
-RESULT=$(pyexec "from plugins.bluesky.helpers.bluesky_client import BlueskyClient, BlueskyRateLimiter; print('ok')")
+RESULT=$(pyexec "from usr.plugins.bluesky.helpers.bluesky_client import BlueskyClient, BlueskyRateLimiter; print('ok')")
 if [ "$RESULT" = "ok" ]; then
     pass "T3.2 bluesky_client imports"
 else
@@ -201,7 +201,7 @@ else
 fi
 
 # T3.3 sanitize
-RESULT=$(pyexec "from plugins.bluesky.helpers.sanitize import sanitize_post_text, validate_post_length, detect_facets, format_post, format_profile; print('ok')")
+RESULT=$(pyexec "from usr.plugins.bluesky.helpers.sanitize import sanitize_post_text, validate_post_length, detect_facets, format_post, format_profile; print('ok')")
 if [ "$RESULT" = "ok" ]; then
     pass "T3.3 sanitize imports"
 else
@@ -222,7 +222,7 @@ section "4. Auth Module Unit Tests"
 
 # T4.1 Validate post length
 RESULT=$(pyexec "
-from plugins.bluesky.helpers.sanitize import validate_post_length
+from usr.plugins.bluesky.helpers.sanitize import validate_post_length
 ok1, c1 = validate_post_length('Hello Bluesky!')
 assert ok1 and c1 == 14, f'Short post: {ok1}, {c1}'
 ok2, c2 = validate_post_length('x' * 301)
@@ -239,7 +239,7 @@ fi
 
 # T4.2 Sanitize post text
 RESULT=$(pyexec "
-from plugins.bluesky.helpers.sanitize import sanitize_post_text
+from usr.plugins.bluesky.helpers.sanitize import sanitize_post_text
 t1 = sanitize_post_text('  Hello\u200b World  ')
 assert t1 == 'Hello World', f'Got: {repr(t1)}'
 t2 = sanitize_post_text('A\n\n\n\nB')
@@ -254,7 +254,7 @@ fi
 
 # T4.3 Handle validation
 RESULT=$(pyexec "
-from plugins.bluesky.helpers.sanitize import validate_handle
+from usr.plugins.bluesky.helpers.sanitize import validate_handle
 h = validate_handle('@user.bsky.social')
 assert h == 'user.bsky.social', f'Got: {h}'
 h2 = validate_handle('custom.example.com')
@@ -274,7 +274,7 @@ fi
 
 # T4.4 AT URI validation
 RESULT=$(pyexec "
-from plugins.bluesky.helpers.sanitize import validate_at_uri
+from usr.plugins.bluesky.helpers.sanitize import validate_at_uri
 u = validate_at_uri('at://did:plc:abc123/app.bsky.feed.post/xyz')
 assert u == 'at://did:plc:abc123/app.bsky.feed.post/xyz'
 try:
@@ -292,7 +292,7 @@ fi
 
 # T4.5 Facet detection (links)
 RESULT=$(pyexec "
-from plugins.bluesky.helpers.sanitize import detect_facets
+from usr.plugins.bluesky.helpers.sanitize import detect_facets
 facets = detect_facets('Check out https://example.com for more')
 assert len(facets) >= 1, f'Expected at least 1 facet, got {len(facets)}'
 tkey = chr(36) + 'type'
@@ -307,7 +307,7 @@ fi
 
 # T4.6 Facet detection (mentions)
 RESULT=$(pyexec "
-from plugins.bluesky.helpers.sanitize import detect_facets
+from usr.plugins.bluesky.helpers.sanitize import detect_facets
 facets = detect_facets('Hello @user.bsky.social!')
 tkey = chr(36) + 'type'
 mentions = [f for f in facets if f['features'][0].get(tkey,'') == 'app.bsky.richtext.facet#mention']
@@ -322,7 +322,7 @@ fi
 
 # T4.7 Facet detection (hashtags)
 RESULT=$(pyexec "
-from plugins.bluesky.helpers.sanitize import detect_facets
+from usr.plugins.bluesky.helpers.sanitize import detect_facets
 facets = detect_facets('Great day #AI #technology')
 tkey = chr(36) + 'type'
 tags = [f for f in facets if f['features'][0].get(tkey,'') == 'app.bsky.richtext.facet#tag']
@@ -337,7 +337,7 @@ fi
 
 # T4.8 Format profile
 RESULT=$(pyexec "
-from plugins.bluesky.helpers.sanitize import format_profile
+from usr.plugins.bluesky.helpers.sanitize import format_profile
 p = format_profile({'handle': 'test.bsky.social', 'displayName': 'Test', 'followersCount': 100, 'followsCount': 50, 'postsCount': 200})
 assert '@test.bsky.social' in p
 assert 'Test' in p
@@ -352,7 +352,7 @@ fi
 
 # T4.9 Auth module — credentials check
 RESULT=$(pyexec "
-from plugins.bluesky.helpers.bluesky_auth import has_credentials
+from usr.plugins.bluesky.helpers.bluesky_auth import has_credentials
 assert not has_credentials({})
 assert not has_credentials({'handle': 'test.bsky.social'})
 assert not has_credentials({'app_password': 'xxxx'})
@@ -368,7 +368,7 @@ fi
 # T4.10 Session expired check
 RESULT=$(pyexec "
 import time
-from plugins.bluesky.helpers.bluesky_auth import _is_session_expired
+from usr.plugins.bluesky.helpers.bluesky_auth import _is_session_expired
 # No saved_at => expired (force re-auth)
 assert _is_session_expired({})
 # Recently saved => not expired
@@ -436,7 +436,7 @@ TOOLS=(
 
 for tool_spec in "${TOOLS[@]}"; do
     IFS=':' read -r tool_file tool_class <<< "$tool_spec"
-    RESULT=$(pyexec "from plugins.bluesky.tools.${tool_file} import ${tool_class}; print('ok')" 2>/dev/null | tail -1)
+    RESULT=$(pyexec "from usr.plugins.bluesky.tools.${tool_file} import ${tool_class}; print('ok')" 2>/dev/null | tail -1)
     if echo "$RESULT" | grep -q "ok"; then
         pass "T6 Tool: ${tool_class}"
     else

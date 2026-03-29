@@ -42,9 +42,9 @@ class BlueskyMedia(Tool):
                 break_loop=False,
             )
 
-        from plugins.bluesky.helpers.bluesky_auth import get_bluesky_config
+        from usr.plugins.bluesky.helpers.bluesky_auth import get_bluesky_config
         config = get_bluesky_config(self.agent)
-        from plugins.bluesky.helpers.bluesky_client import BlueskyClient
+        from usr.plugins.bluesky.helpers.bluesky_client import BlueskyClient
         client = BlueskyClient(config)
 
         try:
@@ -71,7 +71,7 @@ class BlueskyMedia(Tool):
                 )
 
             # Post with the uploaded image
-            from plugins.bluesky.helpers.sanitize import sanitize_post_text, validate_post_length, detect_facets
+            from usr.plugins.bluesky.helpers.sanitize import sanitize_post_text, validate_post_length, detect_facets
             text = sanitize_post_text(text)
             ok, count = validate_post_length(text)
             if not ok:
